@@ -1,0 +1,1 @@
+export const alwaysArray = <T>(value: T | T[]) => Array.isArray(value) ? value : [value];

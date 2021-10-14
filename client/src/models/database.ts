@@ -1,7 +1,7 @@
 import { indexDb as databaseConfig } from '../config/database';
 import { IPointOfInterest } from './location';
 import { IVisit } from './visit';
-import { DBSchema, StoreNames, StoreValue } from 'idb';
+import { DBSchema, StoreKey, StoreNames, StoreValue } from 'idb';
 
 export interface IDatabaseSchema extends DBSchema {
     [databaseConfig.storeName.locations]: {
@@ -19,4 +19,4 @@ export interface IDatabaseSchema extends DBSchema {
 
 export type ReviewStoreNames = StoreNames<IDatabaseSchema>;
 export type ReviewStoreValue<TName extends ReviewStoreNames> = StoreValue<IDatabaseSchema, TName>;
-export type ReviewStoreValues = StoreValue<IDatabaseSchema, ReviewStoreNames>;
+export type ReviewStoreKey<TName extends ReviewStoreNames> = StoreKey<IDatabaseSchema, TName>;
