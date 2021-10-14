@@ -1,0 +1,1 @@
+export const isNullOrWhitespace = (value: string | undefined | null) => value == null || value.trim().length === 0;

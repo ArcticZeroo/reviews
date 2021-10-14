@@ -1,0 +1,9 @@
+{
+    "deno.enable": true,
+    "deno.lint": true,
+    "deno.unstable": false,
+    "deno.config": "deno.json",
+    "deno.cache": "",
+    "deno.importMap": "deno_import_map.json",
+    "editor.inlineSuggest.enabled": true
+}

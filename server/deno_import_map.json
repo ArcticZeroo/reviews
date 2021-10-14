@@ -1,0 +1,8 @@
+{
+  "imports": {
+    "std/": "https://deno.land/std@0.111.0/",
+    "fmt/": "https://deno.land/std@0.111.0/fmt/",
+    "oak/": "https://deno.land/x/oak@v9.0.1/",
+    "typeguard": "https://raw.githubusercontent.com/ArcticZeroo/typeguard/main/index.ts"
+  }
+}
