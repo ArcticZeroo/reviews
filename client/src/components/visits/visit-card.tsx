@@ -31,6 +31,15 @@ export const VisitCard: React.FC<IVisitCardProps> = ({ visit }) => {
             <div>
                 {visit.locationName}
             </div>
+            {
+                visit.enhancedLocationData && (
+                    <>
+                        <div>
+                            {visit.enhancedLocationData.address}
+                        </div>
+                    </>
+                )
+            }
             <div>
                 Visited at {visit.visitedAt.toLocaleString()}
             </div>

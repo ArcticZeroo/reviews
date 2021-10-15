@@ -1,4 +1,5 @@
 import { ISentimentScores } from '../models/analysis';
+import { clamp } from './math';
 
 const scorePerStar = 2;
 export const neutralScore = 3 * scorePerStar;
@@ -13,5 +14,5 @@ export const sentimentToScore = (sentiment: ISentimentScores) => {
     const totalScore = sentiment.positive + sentiment.negative + (sentiment.neutral ?? 0);
     const totalPositivity = sentiment.positive / totalScore;
     // todo: weighting for neutrality
-    return totalPositivity * positiveScore;
+    return clamp(Math.round(totalPositivity * positiveScore), 0, 10);
 };
