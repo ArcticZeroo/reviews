@@ -6,7 +6,7 @@ import { isNullOrWhitespace } from '../../../util/string.js';
 import { validateRangeInclusive } from '../../../util/validate.js';
 
 const client = new AzureLocationProvider();
-const searchResultLimit = 10;
+const searchResultLimit = 5;
 
 export const createLocationSearchRouter = (locationRouter: Router) => {
     locationRouter.get('/search', async (context) => {

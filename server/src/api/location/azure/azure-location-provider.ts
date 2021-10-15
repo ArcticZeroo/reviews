@@ -1,14 +1,15 @@
-import { isDuckType, isDuckTypeArray } from '@arcticzeroo/typeguard';
+import { isDuckType } from '@arcticzeroo/typeguard';
+import fetch from 'node-fetch';
 import { URLSearchParams } from 'url';
 import {
     ILocationCoordinates,
     ILocationProvider,
     ILocationSearchOptions,
-    IPointOfInterest
+    IPointOfInterest, serializeCoordinates
 } from '../../../models/location.js';
-import fetch from 'node-fetch';
 import { validateRangeInclusive } from '../../../util/validate.js';
 import { Environment } from '../../env.js';
+import { SuggestionMemoizer } from '../suggestion-memoizer.js';
 
 const resultType = {
     geography:       'Geography',
@@ -61,6 +62,8 @@ interface IFuzzySearchResponse {
 const azureFuzzySearchUrl = 'https://atlas.microsoft.com/search/fuzzy/json';
 
 export class AzureLocationProvider implements ILocationProvider {
+    private _suggestionMemoizer = new SuggestionMemoizer();
+
     private async _doFuzzySearchAsync(options: ILocationSearchOptions): Promise<IFuzzySearchResult[]> {
         const searchParams = new URLSearchParams({
             'api-version':      '1.0',
@@ -109,15 +112,26 @@ export class AzureLocationProvider implements ILocationProvider {
     }
 
     async search(options: ILocationSearchOptions): Promise<IPointOfInterest[]> {
+        const memoizedSuggestions = this._suggestionMemoizer.getMemoizedSuggestionIds(options);
+
+        if (memoizedSuggestions) {
+            console.log(`${options.query} at location ${serializeCoordinates(options.biasLocation)} is already memoized with ${memoizedSuggestions.length} result(s)`);
+            return memoizedSuggestions;
+        }
+
         const searchResults = await this._doFuzzySearchAsync(options);
 
         const poiSearchResults = searchResults.filter(result => result.type === resultType.pointOfInterest) as IFuzzyPoiSearchResult[];
 
-        return poiSearchResults.map(result => ({
+        const pointsOfInterest = poiSearchResults.map(result => ({
             id:       result.id,
             address:  result.address.freeformAddress,
             location: convertFromAzureCoordinates(result.position),
             name:     result.poi.name
         }));
+
+        this._suggestionMemoizer.memoizeSuggestionIds(options, pointsOfInterest);
+
+        return pointsOfInterest;
     }
 }

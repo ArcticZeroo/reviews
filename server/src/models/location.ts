@@ -10,6 +10,21 @@ export interface ILocationCoordinates {
     longitude: number;
 }
 
+const precisionDigits = 5;
+
+export const normalizeCoordinates = ({ latitude, longitude }: ILocationCoordinates = {
+    latitude:  0,
+    longitude: 0
+}): ILocationCoordinates => ({
+    latitude: Number(latitude.toFixed(precisionDigits)),
+    longitude: Number(longitude.toFixed(precisionDigits))
+});
+
+export const serializeCoordinates = (coordinates: ILocationCoordinates = {
+    latitude:  0,
+    longitude: 0
+}) => `${coordinates.latitude},${coordinates.longitude}`;
+
 export interface ILocationSearchOptions {
     query: string;
     biasLocation?: ILocationCoordinates;

@@ -1,33 +1,14 @@
-import { ILocationSearchOptions, IPointOfInterest, serializeCoordinates } from '../../models/location';
+import { ILocationSearchOptions, IPointOfInterest } from '../../models/location';
 import { url as urlConfig } from '../../config/web';
 import { isDuckTypeArray } from '@arcticzeroo/typeguard';
 import { LocationStorage } from '../storage/idb/location';
+import { SuggestionMemoizer } from './suggestion-memoizer';
 
 const suggestionLimit = 5;
 
 export class LocationSearchClient {
-    // serialized coordinates -> query -> list of ids
-    private readonly _memoizedSuggestionsByCoordinateAndQuery = new Map<string, Map<string, string[]>>();
     private readonly _locationStorageClient = new LocationStorage();
-
-    private _getMemoizedSuggestionIds(options: ILocationSearchOptions): string[] | undefined {
-        // Memoize all queries at 0,0 when bias location isn't provided
-        const { query, biasLocation = { latitude: 0, longitude: 0 } } = options;
-        const serializedBiasLocation = serializeCoordinates(biasLocation);
-        return this._memoizedSuggestionsByCoordinateAndQuery.get(serializedBiasLocation)?.get(query);
-    }
-
-    private _memoizeSuggestionIds(options: ILocationSearchOptions, suggestions: IPointOfInterest[]) {
-        // Memoize all queries at 0,0 when bias location isn't provided
-        const { query, biasLocation = { latitude: 0, longitude: 0 } } = options;
-        const serializedBiasLocation = serializeCoordinates(biasLocation);
-
-        const memoizedSuggestionsByQuery = this._memoizedSuggestionsByCoordinateAndQuery.get(serializedBiasLocation) ?? new Map<string, string[]>();
-        const suggestionIds = suggestions.map(suggestion => suggestion.id);
-        memoizedSuggestionsByQuery.set(query, suggestionIds);
-        // In case the bias location wasn't already memoized, add a new sub-map
-        this._memoizedSuggestionsByCoordinateAndQuery.set(serializedBiasLocation, memoizedSuggestionsByQuery);
-    }
+    private readonly _memoizedSuggestions = new SuggestionMemoizer();
 
     public async retrieveSuggestions(options: ILocationSearchOptions): Promise<IPointOfInterest[]> {
         const query = options.query
@@ -40,7 +21,7 @@ export class LocationSearchClient {
             return [];
         }
 
-        const memoizedSuggestionIds = this._getMemoizedSuggestionIds(options);
+        const memoizedSuggestionIds = this._memoizedSuggestions.getMemoizedSuggestionIds(options);
         if (memoizedSuggestionIds) {
             const cachedResults = await this._locationStorageClient.retrieve(memoizedSuggestionIds);
             if (cachedResults.every(result => result != null)) {
@@ -74,7 +55,7 @@ export class LocationSearchClient {
             throw new RangeError(`Response was not in the expected format.`);
         }
 
-        this._memoizeSuggestionIds(options, suggestions);
+        this._memoizedSuggestions.memoizeSuggestionIds(options, suggestions);
 
         return suggestions;
     }
