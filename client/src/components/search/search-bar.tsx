@@ -1,10 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import styled from 'styled-components';
 import { IPointOfInterest } from '../../models/location';
 import { useDebounceAfterDelay } from '../../hooks/debounce';
 import Duration from '@arcticzeroo/duration';
-import { useLatestPromiseState, usePromiseState } from '../../hooks/promise';
-import { delay } from '../../util/timer';
+import { useLatestPromiseState } from '../../hooks/promise';
 import { LocationStorage } from '../../api/storage/idb/location';
 import { LocationSearchClient } from '../../api/location/client';
 import { useWatchedLocation } from '../../hooks/location';
@@ -14,9 +13,14 @@ const SearchBarParent = styled.div`
   position: relative;
   display: flex;
   flex-direction: column;
+  margin-bottom: 1rem;
 `;
 
 const SearchBarInput = styled.input`
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: none;
+  margin-bottom: 1rem;
 `;
 
 const SuggestionsContainer = styled.div`
@@ -70,6 +74,7 @@ export const SearchBar: React.FC<ISearchBarProps> = ({
         });
     }, [userLocation, debouncedQuery]);
 
+    // TODO: fix case where changing query after selecting an enhanced location leads to flashing. we need to invalidate suggestions when we change query after selecting, but that would require another state
     const [suggestions, suggestionError, doLatestSuggestions] = useLatestPromiseState<IPointOfInterest[]>(_retrieveSuggestions);
 
     const onValueChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,7 +91,7 @@ export const SearchBar: React.FC<ISearchBarProps> = ({
 
     return (
         <SearchBarParent>
-            <SearchBarInput value={immediateQuery} onChange={onValueChanged}/>
+            <SearchBarInput value={immediateQuery} onChange={onValueChanged} placeholder="Enter the name of where you visited"/>
             {
                 (!selectedEnhancedLocation && suggestions) && (
                     <SuggestionsContainer>
