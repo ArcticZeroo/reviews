@@ -57,7 +57,7 @@ export class LocationSearchClient {
             queryString.set('long', options.biasLocation.longitude.toString());
         }
 
-        const response = await fetch(urlConfig.locationSuggestions);
+        const response = await fetch(`${urlConfig.locationSuggestions}?${queryString.toString()}`);
 
         if (!response.ok) {
             throw new RangeError(`Response was not OK: ${response.status} / ${response.statusText}`);
