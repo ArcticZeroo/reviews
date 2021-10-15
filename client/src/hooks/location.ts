@@ -1,15 +1,22 @@
 import { useEffect, useState } from 'react';
-import { ILocationCoordinates } from '../models/location';
+import { ILocationCoordinates, serializeCoordinates } from '../models/location';
 
 export const useWatchedLocation = () => {
     const [location, setLocation] = useState<ILocationCoordinates | undefined>();
 
     useEffect(() => {
         const onLocationUpdated = (geolocation: GeolocationPosition) => {
-            setLocation({
+            const newLocation = {
                 latitude: geolocation.coords.latitude,
                 longitude: geolocation.coords.longitude
-            });
+            };
+
+            // Prevent update just because we've changed an object reference
+            if (location && serializeCoordinates(newLocation) === serializeCoordinates(location)) {
+                return;
+            }
+
+            setLocation(newLocation);
         };
 
         // Hmm. Do we really want to clear the location if we can't get the next one?
@@ -22,7 +29,7 @@ export const useWatchedLocation = () => {
         const watchId = navigator.geolocation.watchPosition(onLocationUpdated, onLocationFailure);
 
         return () => navigator.geolocation.clearWatch(watchId);
-    }, []);
+    }, [location]);
 
     return location;
 };
