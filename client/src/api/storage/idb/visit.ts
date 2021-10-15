@@ -1,16 +1,20 @@
 import { indexDb as databaseConfig } from '../../../config/database';
-import { IVisit } from '../../../models/visit';
+import { ISerializedVisit } from '../../../models/visit';
 import { getIdbConnectionAsync } from './connection';
 import { isDuckTypeArray } from '@arcticzeroo/typeguard';
 import { IdbStore } from './idb-store';
 
-export class VisitStorage extends IdbStore<typeof databaseConfig['storeName']['visits'], IVisit> {
-    public async retrieveAllVisits(): Promise<IVisit[]> {
+export class VisitStorage extends IdbStore<typeof databaseConfig['storeName']['visits'], ISerializedVisit> {
+    constructor() {
+        super(databaseConfig.storeName.visits);
+    }
+
+    public async retrieveAllVisits(): Promise<ISerializedVisit[]> {
         const connection = await getIdbConnectionAsync();
 
         const results = await connection.getAll(this.storeName);
 
-        if (!isDuckTypeArray<IVisit>(results, {
+        if (!isDuckTypeArray<ISerializedVisit>(results, {
             location: 'object',
             review: 'string',
             sentiment: 'object',

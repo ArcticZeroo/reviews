@@ -1,9 +1,17 @@
 import { ITextAnalysisResult } from './analysis';
-import { LocationNameOrId } from './location';
+import { IPointOfInterest, LocationNameOrId } from './location';
 
-export interface IVisit {
+export interface ISerializedVisit {
     location: LocationNameOrId;
     visitedAt: Date;
     sentiment: ITextAnalysisResult;
     review: string;
+}
+
+export interface IResolvedVisit {
+    locationName: string;
+    visitedAt: Date;
+    sentiment: ITextAnalysisResult;
+    review: string;
+    enhancedLocationData?: IPointOfInterest;
 }

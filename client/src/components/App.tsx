@@ -1,11 +1,12 @@
 import React from 'react';
-import { SearchBar } from './search/search-bar';
+import { BrowserRouter } from 'react-router-dom';
+import { MainRouteSwitch } from './pages/main';
 
 function App() {
     return (
-        <div className="App">
-            <SearchBar/>
-        </div>
+        <BrowserRouter>
+            <MainRouteSwitch/>
+        </BrowserRouter>
     );
 }
 

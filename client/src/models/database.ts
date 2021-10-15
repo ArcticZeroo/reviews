@@ -1,6 +1,6 @@
 import { indexDb as databaseConfig } from '../config/database';
 import { IPointOfInterest } from './location';
-import { IVisit } from './visit';
+import { ISerializedVisit } from './visit';
 import { DBSchema, StoreKey, StoreNames, StoreValue } from 'idb';
 
 export interface IDatabaseSchema extends DBSchema {
@@ -13,7 +13,7 @@ export interface IDatabaseSchema extends DBSchema {
     };
     [databaseConfig.storeName.visits]: {
         key: string;
-        value: IVisit
+        value: ISerializedVisit
     };
 }
 
