@@ -3,6 +3,10 @@ import { IResolvedVisit } from '../../models/visit';
 import { VisitCard } from './visit-card';
 import styled from 'styled-components';
 
+const VisitListContainer = styled.div`
+  padding: 1rem;
+`;
+
 const VisitList = styled.ul`
   list-style-type: none;
   padding: 0;
@@ -21,21 +25,23 @@ export interface IVisitListProps {
 export const VisitItems: React.FC<IVisitListProps> = ({ visits }) => {
     if (!visits.length) {
         return (
-            <VisitList>
+            <VisitListContainer>
                 You have made no visits.
-            </VisitList>
+            </VisitListContainer>
         );
     }
 
     return (
-        <VisitList>
-            {
-                visits.map(visit => (
-                    <VisitListItem>
-                        <VisitCard key={`${visit.locationName}_${visit.visitedAt.getTime()}`} visit={visit}/>
-                    </VisitListItem>
-                ))
-            }
-        </VisitList>
+        <VisitListContainer>
+            <VisitList>
+                {
+                    visits.map(visit => (
+                        <VisitListItem>
+                            <VisitCard key={`${visit.locationName}_${visit.visitedAt.getTime()}`} visit={visit}/>
+                        </VisitListItem>
+                    ))
+                }
+            </VisitList>
+        </VisitListContainer>
     );
 };

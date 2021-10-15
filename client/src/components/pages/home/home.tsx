@@ -5,6 +5,18 @@ import { IResolvedVisit, ISerializedVisit } from '../../../models/visit';
 import { IPointOfInterest } from '../../../models/location';
 import { LocationStorage } from '../../../api/storage/idb/location';
 import { VisitItems } from '../../visits/visit-items';
+import { LinkButton } from '../../styled/link';
+import styled from 'styled-components';
+import { RoundedRectPill } from '../../styled/pill';
+import { materialColors } from '../../../config/colors';
+
+const VisitsContainer = styled.div`
+`;
+
+const VisitsTitle = styled(RoundedRectPill)`
+  background: #EEE;
+  color: ${materialColors.almostBlack};
+`;
 
 const visitStorageClient = new VisitStorage();
 const locationStorageClient = new LocationStorage();
@@ -36,10 +48,10 @@ export const HomePage: React.FC = () => {
     const isVisitsLoading = !visits && !visitsError;
 
     return (
-        <div>
-            <div>
+        <VisitsContainer>
+            <VisitsTitle>
                 Your visits
-            </div>
+            </VisitsTitle>
             {
                 isVisitsLoading && (
                     <div>
@@ -59,6 +71,9 @@ export const HomePage: React.FC = () => {
                     </div>
                 )
             }
-        </div>
+            <LinkButton to="/log">
+                Log a visit
+            </LinkButton>
+        </VisitsContainer>
     );
 };
