@@ -13,6 +13,10 @@ const SentimentItemContainer = styled.div`
   ${spaceBottomOfChildren};
 `;
 
+const SentimentItemComments = styled.textarea`
+  width: 100%;
+`;
+
 interface IVisitSentimentItemProps {
     item: ISentimentEntityWithId;
 
@@ -22,6 +26,13 @@ interface IVisitSentimentItemProps {
 }
 
 export const VisitSentimentItem: React.FC<IVisitSentimentItemProps> = ({ item, onItemChanged, onItemRemoved }) => {
+    const onNameChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+        onItemChanged({
+            ...item,
+            name: event.target.value
+        });
+    };
+
     const onRatingChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
         const newValueRaw = Number(event.target.value);
 
@@ -58,7 +69,7 @@ export const VisitSentimentItem: React.FC<IVisitSentimentItemProps> = ({ item, o
                 <div>
                     Item Name
                 </div>
-                <input placeholder="Item name"/>
+                <input placeholder="Item name" value={item.name} onChange={onNameChanged}/>
             </div>
             <div>
                 <div>
@@ -73,7 +84,7 @@ export const VisitSentimentItem: React.FC<IVisitSentimentItemProps> = ({ item, o
                 <div>
                     Your comments
                 </div>
-                <textarea value={item.comments.join('\n')} onChange={onCommentsChanged}/>
+                <SentimentItemComments value={item.comments.join('\n')} onChange={onCommentsChanged}/>
             </div>
             <DestructiveButton onClick={onItemRemoved}>
                 Remove

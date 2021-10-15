@@ -18,9 +18,11 @@ interface IVisitReviewProps {
     reviewText: string;
 
     onReviewTextChanged(newText: string): void;
+
+    onGenerateClicked(): void;
 }
 
-export const VisitReview: React.FC<IVisitReviewProps> = ({ reviewText, onReviewTextChanged }) => {
+export const VisitReview: React.FC<IVisitReviewProps> = ({ reviewText, onReviewTextChanged, onGenerateClicked }) => {
     return (
         <VisitReviewContainer>
             <div>
@@ -28,7 +30,7 @@ export const VisitReview: React.FC<IVisitReviewProps> = ({ reviewText, onReviewT
             </div>
             <VisitReviewTextarea placeholder={'Review goes here'} value={reviewText}
                                  onChange={event => onReviewTextChanged(event.target.value)}/>
-            <PrimaryButton>
+            <PrimaryButton onClick={onGenerateClicked}>
                 Generate
             </PrimaryButton>
         </VisitReviewContainer>

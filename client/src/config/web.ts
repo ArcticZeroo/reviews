@@ -1,3 +1,4 @@
 export const url = {
-    locationSuggestions: '/api/location/search'
+    locationSuggestions: '/api/location/search',
+    textAnalysis: '/api/reviews/analyze'
 };
