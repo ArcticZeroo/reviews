@@ -14,6 +14,7 @@ import { PrimaryButton } from '../../styled/button';
 import { VisitStorage } from '../../../api/storage/idb/visit';
 import { ISerializedVisit } from '../../../models/visit';
 import { useHistory } from 'react-router-dom';
+import { getTimezoneOffsetDate } from '../../../util/date';
 
 const VisitReviewContainer = styled.div`
   position: relative;
@@ -49,6 +50,7 @@ export const VisitLog: React.FC = () => {
     const [isGeneratingSentiment, setIsGeneratingSentiment] = useState(false);
     const [sentimentGenerationError, setSentimentGenerationError] = useState<any>();
     const [isSavingVisit, setSavingVisit] = useState(false);
+    const [visitDate, setVisitDate] = useState(new Date());
 
     const onLocationQueryChanged = (newQuery: string) => {
         setLocationQuery(newQuery);
@@ -78,6 +80,11 @@ export const VisitLog: React.FC = () => {
     };
 
     const onSentimentEntityRemoved = (i: number) => {
+        if (sentimentEntities.length === 1) {
+            setSentimentEntities([getDefaultSentimentEntity()]);
+            return;
+        }
+
         setSentimentEntities([
             ...sentimentEntities.slice(0, i),
             ...sentimentEntities.slice(i + 1)
@@ -127,7 +134,7 @@ export const VisitLog: React.FC = () => {
 
         visitStorageClient.store({
             location: serializedLocation,
-            visitedAt: new Date(),
+            visitedAt: visitDate,
             review: reviewText,
             sentiment: {
                 overallSentiment: {
@@ -144,6 +151,11 @@ export const VisitLog: React.FC = () => {
             .catch(console.error);
     };
 
+    const onDateChanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const valueAsDate = new Date(event.target.value);
+        setVisitDate(valueAsDate);
+    };
+
     return (
         <VisitLogContainer>
             {
@@ -155,6 +167,9 @@ export const VisitLog: React.FC = () => {
                        selectedEnhancedLocation={enhancedLocation}
                        onImmediateQueryChanged={onLocationQueryChanged}
                        onEnhancedLocationSelected={onEnhancedLocationSelected}/>
+            <div>
+                <input type="datetime-local" value={getTimezoneOffsetDate(visitDate).toISOString().slice(0, 16)} onChange={onDateChanged}/>
+            </div>
             <VisitReviewContainer>
                 {isGeneratingSentiment && <LoadingOverlay/>}
                 <VisitReview reviewText={reviewText}

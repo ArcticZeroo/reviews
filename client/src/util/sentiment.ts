@@ -1,7 +1,7 @@
 import { ISentimentScores } from '../models/analysis';
 
 const scorePerStar = 2;
-const neutralScore = 3 * scorePerStar;
+export const neutralScore = 3 * scorePerStar;
 export const positiveScore = 5 * scorePerStar;
 
 /**
