@@ -1,16 +1,13 @@
 import React from 'react';
 import styled from 'styled-components';
 import { PrimaryButton } from '../../styled/button';
-import { coolTopLeftBorder } from '../../../constants/css';
+import { coolTopLeftBorder, spaceBottomOfChildren } from '../../../constants/css';
 
 const VisitReviewContainer = styled.div`
   display: flex;
   flex-direction: column;
   ${coolTopLeftBorder};
-
-  > *:not(:last-child) {
-    margin-bottom: 1rem;
-  }
+  ${spaceBottomOfChildren};
 `;
 
 const VisitReviewTextarea = styled.textarea`

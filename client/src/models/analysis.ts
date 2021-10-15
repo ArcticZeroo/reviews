@@ -10,6 +10,10 @@ export interface ISentimentEntity {
     comments: string[];
 }
 
+export interface ISentimentEntityWithId extends ISentimentEntity {
+    id: string;
+}
+
 export interface ITextAnalysisResult {
     overallSentiment: ISentimentScores;
     sentimentEntities: ISentimentEntity[];

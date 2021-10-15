@@ -6,3 +6,9 @@ export const coolTopLeftBorder = `
   border-top-left-radius: 1rem;
   padding: 1rem;
 `;
+
+export const spaceBottomOfChildren = `
+  > *:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+`;
