@@ -2,7 +2,7 @@ import { ISentimentScores } from '../models/analysis';
 
 const scorePerStar = 2;
 const neutralScore = 3 * scorePerStar;
-const positiveScore = 5 * scorePerStar;
+export const positiveScore = 5 * scorePerStar;
 
 /**
  * Convert sentiment scores to a raw score out of 10, aka 5 stars with half star values.
