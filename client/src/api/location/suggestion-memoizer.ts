@@ -1,4 +1,4 @@
-import { ILocationSearchOptions, IPointOfInterest, serializeCoordinates } from '../../models/location.js';
+import { ILocationSearchOptions, IPointOfInterest, serializeCoordinates } from '../../models/location';
 
 export class SuggestionMemoizer {
     // serialized coordinates -> query -> list of ids

@@ -8,28 +8,20 @@ import { delay } from '../../util/timer';
 import { LocationStorage } from '../../api/storage/idb/location';
 import { LocationSearchClient } from '../../api/location/client';
 import { useWatchedLocation } from '../../hooks/location';
+import { EnhancedLocationSuggestion } from './enhanced-location-suggestion';
 
 const SearchBarParent = styled.div`
   position: relative;
   display: flex;
+  flex-direction: column;
 `;
 
 const SearchBarInput = styled.input`
 `;
 
 const SuggestionsContainer = styled.div`
-  position: absolute;
-  z-index: 5;
-  top: 100%;
   display: flex;
   flex-direction: column;
-`;
-
-const SuggestionItem = styled.button`
-  background: #EEE;
-  padding: 0.75rem;
-  border-radius: 0.5rem;
-  border: none;
 `;
 
 const locationStorageClient = new LocationStorage();
@@ -46,9 +38,21 @@ const useLocationCacheEffect = (suggestions: Array<IPointOfInterest> | undefined
     }, [suggestions]);
 };
 
-export const SearchBar: React.FC = () => {
-    const [immediateQuery, setImmediateQuery] = useState('');
+interface ISearchBarProps {
+    immediateQuery: string;
+    selectedEnhancedLocation?: IPointOfInterest;
 
+    onImmediateQueryChanged(newQuery: string): void;
+
+    onEnhancedLocationSelected(locationData: IPointOfInterest): void;
+}
+
+export const SearchBar: React.FC<ISearchBarProps> = ({
+                                                         immediateQuery,
+                                                         selectedEnhancedLocation,
+                                                         onImmediateQueryChanged,
+                                                         onEnhancedLocationSelected
+                                                     }) => {
     const [debouncedQuery, setDebouncedQuery] = useDebounceAfterDelay<string>(
         new Duration({ milliseconds: 300 })
     );
@@ -70,7 +74,7 @@ export const SearchBar: React.FC = () => {
 
     const onValueChanged = (e: React.ChangeEvent<HTMLInputElement>) => {
         const newValue = e.target.value;
-        setImmediateQuery(newValue);
+        onImmediateQueryChanged(newValue);
         setDebouncedQuery(newValue);
     };
 
@@ -84,12 +88,13 @@ export const SearchBar: React.FC = () => {
         <SearchBarParent>
             <SearchBarInput value={immediateQuery} onChange={onValueChanged}/>
             {
-                suggestions && (
+                (!selectedEnhancedLocation && suggestions) && (
                     <SuggestionsContainer>
                         {suggestions.map(suggestion => (
-                            <SuggestionItem key={suggestion.name}>
-                                {suggestion.name}
-                            </SuggestionItem>
+                            <EnhancedLocationSuggestion key={suggestion.id}
+                                                        onClick={() => onEnhancedLocationSelected(suggestion)}
+                                                        suggestion={suggestion}
+                                                        userLocation={userLocation}/>
                         ))}
                     </SuggestionsContainer>
                 )
