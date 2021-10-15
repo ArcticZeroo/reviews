@@ -5,6 +5,9 @@ import { useDebounceAfterDelay } from '../../hooks/debounce';
 import Duration from '@arcticzeroo/duration';
 import { useLatestPromiseState, usePromiseState } from '../../hooks/promise';
 import { delay } from '../../util/timer';
+import { LocationStorage } from '../../api/storage/idb/location';
+import { LocationSearchClient } from '../../api/location/client';
+import { useWatchedLocation } from '../../hooks/location';
 
 const SearchBarParent = styled.div`
   position: relative;
@@ -29,34 +32,39 @@ const SuggestionItem = styled.button`
   border: none;
 `;
 
+const locationStorageClient = new LocationStorage();
+const locationSearchClient = new LocationSearchClient();
+
+const useLocationCacheEffect = (suggestions: Array<IPointOfInterest> | undefined) => {
+    useEffect(() => {
+        if (!suggestions?.length) {
+            return;
+        }
+
+        locationStorageClient.store(suggestions)
+            .catch(err => console.error('Unable to cache locations in background:', err));
+    }, [suggestions]);
+};
+
 export const SearchBar: React.FC = () => {
     const [immediateQuery, setImmediateQuery] = useState('');
 
-    const [debouncedQuery, setDebouncedQuery] = useDebounceAfterDelay(
+    const [debouncedQuery, setDebouncedQuery] = useDebounceAfterDelay<string>(
         new Duration({ milliseconds: 300 })
     );
+
+    const userLocation = useWatchedLocation();
 
     const _retrieveSuggestions = useCallback(async (): Promise<IPointOfInterest[]> => {
         if (!debouncedQuery) {
             return [];
         }
 
-        const results: IPointOfInterest[] = [];
-        const resultCount = Math.random() * 10 + 1;
-
-        for (let i = 0; i < resultCount; i++) {
-            results.push({
-                name: `Result ${i}`,
-                address: 'a',
-                location: {
-                    latitude: 0,
-                    longitude: 0
-                }
-            });
-        }
-
-        return results;
-    }, [debouncedQuery]);
+        return locationSearchClient.retrieveSuggestions({
+            query: debouncedQuery,
+            biasLocation: userLocation
+        });
+    }, [userLocation, debouncedQuery]);
 
     const [suggestions, suggestionError, doLatestSuggestions] = useLatestPromiseState<IPointOfInterest[]>(_retrieveSuggestions);
 
@@ -69,6 +77,8 @@ export const SearchBar: React.FC = () => {
     useEffect(() => {
         doLatestSuggestions();
     }, [doLatestSuggestions, debouncedQuery]);
+
+    useLocationCacheEffect(suggestions);
 
     return (
         <SearchBarParent>
