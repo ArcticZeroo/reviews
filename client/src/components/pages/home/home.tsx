@@ -4,6 +4,7 @@ import { VisitStorage } from '../../../api/storage/idb/visit';
 import { IResolvedVisit, ISerializedVisit } from '../../../models/visit';
 import { IPointOfInterest } from '../../../models/location';
 import { LocationStorage } from '../../../api/storage/idb/location';
+import { VisitItems } from '../../visits/visit-items';
 
 const visitStorageClient = new VisitStorage();
 const locationStorageClient = new LocationStorage();
@@ -48,9 +49,7 @@ export const HomePage: React.FC = () => {
             }
             {
                 visits && (
-                    visits.length === 0
-                    ? 'You have not visited.'
-                        : visits.map(visit => visit.locationName)
+                    <VisitItems visits={visits}/>
                 )
             }
             {
