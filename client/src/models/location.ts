@@ -15,7 +15,6 @@ export const serializeCoordinates = (coordinates: ILocationCoordinates) => `${co
 export interface ILocationSearchOptions {
     query: string;
     biasLocation?: ILocationCoordinates;
-    limit?: number;
 }
 
 export interface ILocationName {
